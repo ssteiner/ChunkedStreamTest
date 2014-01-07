@@ -58,11 +58,16 @@ namespace ChunkedStreamClient
                 pollClient.DefaultRequestHeaders.TransferEncodingChunked = true;
                 Uri reqUri = new Uri(baseUrl + "PollData");
                 HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, reqUri);
+                //req.Headers.ConnectionClose = true;
                 response = await pollClient.SendAsync(req, HttpCompletionOption.ResponseHeadersRead);
                 if (response.IsSuccessStatusCode)
                 {
-                    System.IO.Stream chunkedStream = await pollClient.GetStreamAsync(reqUri);
-                    startReadingFromChunkedStream(chunkedStream);
+
+                    System.IO.Stream chunkedStream2 = await response.Content.ReadAsStreamAsync();
+                    startReadingFromChunkedStream(chunkedStream2);
+
+                    //System.IO.Stream chunkedStream = await pollClient.GetStreamAsync(reqUri); // generates a second GET request
+                    //startReadingFromChunkedStream(chunkedStream);
                 }
             }
             catch (Exception e)
